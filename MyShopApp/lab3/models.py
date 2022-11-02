@@ -22,22 +22,11 @@ class Osoba(models.Model):
         LISTOPAD = 11
         GRUDZIEN = 12
 
-    # wybor_miesiaca = (
-    #     ('1', 'Styczeń'),
-    #     ('2', 'Luty'),
-    #     ('3', 'Marzec'),
-    #     ('4', 'Kwiecień'),
-    #     ('5', 'Maj'),
-    #     ('6', 'Czerwiec'),
-    #     ('7', 'Lipiec'),
-    #     ('8', 'Sierpień'),
-    #     ('9', 'Wrzesień'),
-    #     ('10', 'Październik'),
-    #     ('11', 'Listopad'),
-    #     ('12', 'Grudzień')
-    # )
     miesiac_urodzenia = models.IntegerField(choices=WyborMiesiaca.choices)
     data_dodania = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.imie} {self.nazwisko}'
+
+    class Meta:
+        ordering = ["nazwisko"]
