@@ -38,3 +38,6 @@ class Osoba(models.Model):
     # )
     miesiac_urodzenia = models.IntegerField(choices=WyborMiesiaca.choices)
     data_dodania = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.imie} {self.nazwisko}'
