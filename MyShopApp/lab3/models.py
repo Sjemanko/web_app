@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 
 # Create your models here.
@@ -21,3 +22,4 @@ class Osoba(models.Model):
         ('12', 'Grudzień')
     )
     miesiac_urodzenia = models.CharField(blank=True, choices=wybor_miesiaca, max_length=20, default=4)
+    data_dodania = models.DateField(default=date.today())
