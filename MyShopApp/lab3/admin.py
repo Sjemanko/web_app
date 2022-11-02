@@ -1,11 +1,18 @@
 from django.contrib import admin
-from .models import Osoba
+from .models import Osoba, Druzyna
 
 
 # Register your models here.
 
-# class PersonAdmin(admin.ModelAdmin):
-#     list_display = ['imie', 'nazwisko', 'miesiac_urodzenia', 'data_dodania']
+class OsobaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'druzyna', 'nazwisko', 'imie', 'miesiac_urodzenia', 'data_dodania']
+    list_filter = ['druzyna']
 
 
-admin.site.register(Osoba)
+class DruzynaAdmin(admin.ModelAdmin):
+    list_display = ['nazwa', 'kraj']
+    list_filter = ['kraj']
+
+
+admin.site.register(Osoba, OsobaAdmin)
+admin.site.register(Druzyna, DruzynaAdmin)
