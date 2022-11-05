@@ -36,3 +36,10 @@ class TeamSerializer(serializers.Serializer):
         instance.country = validated_data.get('country', instance.country)
         instance.save()
         return instance
+
+
+class PersonModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+        fields = ['id', 'first_name', 'last_name', 'month_birth', 'team', 'created_at']
+        read_only_fields = ['id']
