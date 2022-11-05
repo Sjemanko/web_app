@@ -6,8 +6,8 @@ class PersonSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     first_name = serializers.CharField(max_length=50, required=True)
     last_name = serializers.CharField(max_length=50, required=True)
-    month_birth = serializers.ChoiceField(choices=MonthBirth)
-    team = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all)
+    month_birth = serializers.ChoiceField(choices=MonthBirth.choices, default=MonthBirth.choices[0][0])
+    team = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     created_at = serializers.DateTimeField()
 
     def create(self, validated_data):
