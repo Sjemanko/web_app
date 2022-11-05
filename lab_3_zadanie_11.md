@@ -6,9 +6,9 @@
 
 ## Osoba.objects.filter(imie\_\_startswith="Thomas")
 
-## --
+## Osoba.objects.all().distinct('druzyna')
 
-## --
+## Osoba.objects.all().order_by('-druzyna')
 
 ## Druzyna.objects.order_by('nazwa')
 
