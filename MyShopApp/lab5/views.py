@@ -55,8 +55,11 @@ def person_list(request):
     Lista wszystkich obiektów modelu Person.
     :param request:
     """
-
     if request.method == 'GET':
-        person_data = Person.objects.all()
-        serializer = PersonSerializer(person_data, many=True)
+        if request.query_params.get('name'):
+            persons_data = Person.objects.filter(first_name__contains=request.query_params.get('name'))
+            serializer = PersonSerializer(persons_data, many=True)
+        else:
+            persons_data = Person.objects.all()
+            serializer = PersonSerializer(persons_data, many=True)
         return Response(serializer.data)
