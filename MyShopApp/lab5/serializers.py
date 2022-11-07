@@ -35,3 +35,17 @@ class PersonSerializer(serializers.Serializer):
         if data['created_at_month'] > datetime.datetime.today().month:
             raise serializers.ValidationError("Dane w polu 'miesiac_dodania' są nieprawidłowe!")
         return data
+
+
+class TeamSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    country = serializers.CharField(max_length=2)
+
+    def create(self, validated_data):
+        return Team.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.country = validated_data.get('country', instance.country)
+        instance.save()
+        return instance
