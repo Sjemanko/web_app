@@ -126,3 +126,4 @@ def team_list(request):
         persons_data = Team.objects.all()
         serializer = TeamSerializer(persons_data, many=True)
         return Response(serializer.data)
+
