@@ -14,3 +14,4 @@ class TeamAdmin(admin.ModelAdmin):
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Team, TeamAdmin)
+
