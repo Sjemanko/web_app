@@ -26,16 +26,12 @@ class PersonSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-    def validate_name(self, value):
-        if not value.isalpha():
+    def validate(self, data):
+        if not data['first_name'].isalpha():
             raise serializers.ValidationError("Nazwa nie powinna zawierać wartości liczbowych!")
-        return value
-
-    def created_at_month_validation(self, data):
         if data['created_at_month'] > datetime.datetime.today().month:
             raise serializers.ValidationError("Dane w polu 'miesiac_dodania' są nieprawidłowe!")
         return data
-
 
 class TeamSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
