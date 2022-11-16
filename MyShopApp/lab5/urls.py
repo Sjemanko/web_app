@@ -10,5 +10,4 @@ urlpatterns = [
     path('teams/<int:id>/', views.team_details),
     path('teams/add-team', views.add_team),
     path('teams/', views.team_list)
-    
 ]
