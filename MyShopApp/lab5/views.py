@@ -11,8 +11,9 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 
 
 # Create your views here.
-
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def person_details(request, id):
     """
     GET, PUT, DELETE on Person (details)
@@ -23,13 +24,14 @@ def person_details(request, id):
 
     try:
         person = Person.objects.get(id=id)
+        if request.user != person.owner:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        person_data = Person.objects.get(id=id)
-        serializer = PersonSerializer(person_data)
-        return Response(serializer.data)
+        serializer = PersonSerializer(person)
+        return Response(serializer.data)    
 
     if request.method == 'PUT':
         serializer = PersonSerializer(person, data=request.data)

@@ -28,9 +28,9 @@ class MonthBirth(models.IntegerChoices):
 
 
 class Person(models.Model):
+    owner = models.ForeignKey("auth.User", null='true', related_name=("Person"), on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-
     month_birth = models.IntegerField(choices=MonthBirth.choices)
     created_at_month = models.IntegerField(default=datetime.date.today().month)
     created_at = models.DateTimeField(auto_now_add=True)
