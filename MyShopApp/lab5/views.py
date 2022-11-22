@@ -21,9 +21,7 @@ def person_details(request, id):
     :param id: id osoby
     :return:
     """
-    
     is_tokened = Token.objects.filter(user=request.user)
-
     try:
         person = Person.objects.get(id=id)
         if request.user != person.owner:
@@ -81,10 +79,10 @@ def person_list(request):
     
 
 
-@api_view(['PUT', 'DELETE'])
+@api_view(['DELETE'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def update_delete_person(request, pk):
+def update_person(request, pk):
     try:
         person = Person.objects.get(pk=pk)
     except Person.DoesNotExist:
@@ -97,10 +95,27 @@ def update_delete_person(request, pk):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        person.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_person(request, pk):
+    try:
+        person = Person.objects.get(pk=pk)
+        is_tokened = Token.objects.filter(user=request.user)
+    except Person.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+    serializer = PersonSerializer(person, data=request.data)
+    if request.method == 'DELETE': 
+        if is_tokened:
+            person.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"message": "Brak tokenu uwierzytelniającego"})    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def team_details(request, id):
@@ -153,8 +168,27 @@ def team_list(request):
     """
         List of all teams
         :param request:
-        """
+    """
     if request.method == 'GET':
         persons_data = Team.objects.all()
         serializer = TeamSerializer(persons_data, many=True)
         return Response(serializer.data)
+
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def show_team_members(request, id):
+    is_tokened = Token.objects.filter(user=request.user)
+    try:
+       persons_data = Person.objects.filter(team=id)
+    except ObjectDoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+    if request.method == 'GET':
+        if is_tokened:
+            serializer = PersonSerializer(persons_data, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "Brak tokenu uwierzytelniającego"})  
