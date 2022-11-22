@@ -1,5 +1,7 @@
 from django.db import models
 import datetime
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -41,3 +43,4 @@ class Person(models.Model):
 
     class Meta:
         ordering = ["last_name"]
+

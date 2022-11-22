@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('persons/<int:id>/', views.person_details),
@@ -9,5 +10,6 @@ urlpatterns = [
     path('persons/update/<int:pk>', views.update_delete_person),
     path('teams/<int:id>/', views.team_details),
     path('teams/add-team', views.add_team),
-    path('teams/', views.team_list)
+    path('teams/', views.team_list),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ]

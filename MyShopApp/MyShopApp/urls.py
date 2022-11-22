@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('item-list/', include("ItemlistApp.urls")),
     path('api-auth/', include('rest_framework.urls')),
-    path('lab5/', include('lab5.urls'))
+    path('lab5/', include('lab5.urls')),
 ]
 
 if settings.DEBUG:

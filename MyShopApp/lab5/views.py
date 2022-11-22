@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from .models import Person, Team
 from .serializers import PersonSerializer, TeamSerializer
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
 @api_view(['GET', 'PUT', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def person_details(request, id):
     """
@@ -21,17 +21,22 @@ def person_details(request, id):
     :param id: id osoby
     :return:
     """
+    
+    is_tokened = Token.objects.filter(user=request.user)
 
     try:
         person = Person.objects.get(id=id)
         if request.user != person.owner:
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({ "detail": "Nie podano danych uwierzytelniających."})
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = PersonSerializer(person)
-        return Response(serializer.data)    
+        if is_tokened:
+            serializer = PersonSerializer(person)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "brak token"})
 
     if request.method == 'PUT':
         serializer = PersonSerializer(person, data=request.data)
@@ -153,4 +158,3 @@ def team_list(request):
         persons_data = Team.objects.all()
         serializer = TeamSerializer(persons_data, many=True)
         return Response(serializer.data)
-
