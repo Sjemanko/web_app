@@ -9,6 +9,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authtoken.models import Token
+from django.core.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from django.http import Http404
 
 # Create your views here.
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -24,8 +27,8 @@ def person_details(request, id):
     is_tokened = Token.objects.filter(user=request.user)
     try:
         person = Person.objects.get(id=id)
-        if request.user != person.owner:
-            return Response({ "detail": "Nie podano danych uwierzytelniających."})
+        if request.user != person.owner and person.can_view_other_persons == False:
+            return Response({ "detail": "Nie podano danych uwierzytelniających. Brak uprawnień do wglądu danej osoby."})
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -192,3 +195,49 @@ def show_team_members(request, id):
             return Response(serializer.data)
         else:
             return Response({"message": "Brak tokenu uwierzytelniającego"})  
+        
+
+@api_view(['GET'])
+def check_permissions(request):
+    if not request.user.has_perm('lab5.view_person'):
+        raise PermissionDenied()
+    else: 
+        return Response({"message": "Konto przeszło weryfikację (uprawnienia -> grupa)"})
+
+    
+
+class TeamDetail(APIView):
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # dodanie tej metody lub pola klasy o nazwie queryset jest niezbędne
+    # aby DjangoModelPermissions działało poprawnie (stosowny błąd w oknie konsoli
+    # nam o tym przypomni)
+    def get_queryset(self):
+        return Team.objects.all()
+
+    def get_object(self, pk):
+        try:
+            return Team.objects.get(pk=pk)
+        except Team.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        if not request.user.has_perm('lab5.view_team'):
+            raise PermissionDenied()
+        team = self.get_object(pk)
+        serializer = TeamSerializer(team)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        team = self.get_object(pk)
+        serializer = TeamSerializer(team, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        team = self.get_object(pk)
+        team.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

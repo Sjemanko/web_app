@@ -12,5 +12,7 @@ urlpatterns = [
     path('teams/add-team', views.add_team),
     path('teams/', views.team_list),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('team/<int:id>/members/', views.show_team_members)
+    path('team/<int:id>/members/', views.show_team_members),
+    path('perms/', views.check_permissions),
+    path('team/<int:pk>/details', views.TeamDetail.as_view())
 ]

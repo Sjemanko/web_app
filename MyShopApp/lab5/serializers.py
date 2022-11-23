@@ -6,6 +6,7 @@ from .models import Person, Team, MonthBirth
 
 class PersonSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
+    can_view_other_persons = serializers.BooleanField()
     owner = serializers.ReadOnlyField(source='owner.username')
     first_name = serializers.CharField(max_length=50, required=True)
     last_name = serializers.CharField(max_length=50, required=True)

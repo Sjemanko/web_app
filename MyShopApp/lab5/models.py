@@ -31,6 +31,7 @@ class MonthBirth(models.IntegerChoices):
 
 class Person(models.Model):
     owner = models.ForeignKey("auth.User", null='true', related_name=("Person"), on_delete=models.CASCADE)
+    can_view_other_persons = models.BooleanField(default=False)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     month_birth = models.IntegerField(choices=MonthBirth.choices)
