@@ -43,3 +43,14 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['id']
+
+
+class ShoppingCart(models.Model):
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    cart_name = models.CharField(max_length=50, default='')
+    def __str__(self):
+        return f'{self.product_id}'
+
+    class Meta:
+        ordering = ['id']
+
