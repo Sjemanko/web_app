@@ -22,6 +22,7 @@ urlpatterns = [
     path('item-list/', include("ItemlistApp.urls")),
     path('api-auth/', include('rest_framework.urls')),
     path('lab5/', include('lab5.urls')),
+    path('home/', include('shopsketch.urls'))
 ]
 
 if settings.DEBUG:

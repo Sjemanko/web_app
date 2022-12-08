@@ -122,7 +122,7 @@ def delete_person(request, pk):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def team_details(request, id):
-    """
+    """z
     GET, PUT, DELETE on team (details)
     :param request:
     :param id:
