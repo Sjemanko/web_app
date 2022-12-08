@@ -72,7 +72,7 @@ def person_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def team_details(request, id):
-    """
+    """z
     GET, PUT, DELETE on team (details)
     :param request:
     :param id:
