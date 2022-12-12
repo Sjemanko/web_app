@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+# from django.db.models import pre_save, post_save
+# from django.dispatch import receiver
 # Create your models here.
 
 
@@ -37,6 +39,9 @@ class Product(models.Model):
         max_length = 2,
         choices = SIZES
     )
+    product_price = models.FloatField(
+        default=0
+    )
 
     def __str__(self):
         return f'{self.product_name} {self.product_gender}'
@@ -45,20 +50,23 @@ class Product(models.Model):
         ordering = ['id']
  
 class ShoppingCart(models.Model):
-    owner = models.ForeignKey('auth.User', null='true', related_name=('cart_owner'), on_delete=models.CASCADE)
-    
+    owner = models.ForeignKey('auth.User', null='true', on_delete=models.CASCADE)
+    ordered = models.BooleanField(default=False)
+
     def __str__(self):
-        return f'{self.id} {self.owner}'
+        return f'{self.owner.username} {self.id}'
 
 
-class Order(models.Model):
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    shopping_cart_id = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+
+class OrderedItems(models.Model):
+    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.shopping_cart.owner.username} {self.product.product_name}'
+
+
+
+
     
-
-
-
-
-
-

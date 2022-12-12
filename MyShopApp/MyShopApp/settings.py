@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'lab4.apps.Lab4Config',
     'lab5.apps.Lab5Config',
     'rest_framework.authtoken',
-    'shopsketch'
+    'shopsketch',
 ]
 
 MIDDLEWARE = [
