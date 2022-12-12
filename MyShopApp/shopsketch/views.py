@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Product, ShoppingCart, OrderedItems
 from rest_framework.response import Response
-from .serializers import ProductSerializer, ShoppingCartSerializer, OrderedItemsSerializer, CartItemsSerializer
+from .serializers import ProductSerializer, ShoppingCartSerializer, OrderedItemsSerializer, CartItemsSerializer, OrderSerializer
 from rest_framework.decorators import api_view
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
@@ -117,49 +117,80 @@ def show_my_orders(request):
         return Response(content)
 
 
-@authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def create_order(request):
-    if (isinstance(request.user, User)) and request.method == 'POST':
-        order_serializer = OrderedItemsSerializer(data=request.data)
-        order_serializer.is_valid(raise_exception=True)
-        order_serializer.save()
-        return Response(order_serializer.data)
-    else:
-        content={'status': 'Log In to show cart.'}
-        return Response(content)
-    # if request.method == 'POST':
-    #     serializer = ProductSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)
+    order_serializer = OrderSerializer(data=request.data)
+    order_serializer.is_valid(raise_exception=True)
+    order_serializer.save()
+    return Response(order_serializer.data)
 
 
+#########
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 @api_view(['DELETE'])
-def remove_order(request, pk):
-    pass
+def remove_order(request, id):
+    try:
+        order = OrderedItems.objects.get(id=id)
+    except ObjectDoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == 'DELETE':
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+#########
 
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 @api_view(['PUT'])
-def update_order(request, pk):
-    pass
+def update_order(request, id):
+    try:
+        order = OrderedItems.objects.get(id=id)
+    except ObjectDoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if (isinstance(request.user, User)) and request.method == 'PUT':
+        serializer = OrderSerializer(order, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        content={'status': 'Log In to update cart.'}
+        return Response(content)
 
 
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def show_order(request, pk):
-    pass
+def show_order(request, id):
+    if (isinstance(request.user, User)) and request.method == 'GET':
+        orders = OrderedItems.objects.get(id=id)
+        serializer = CartItemsSerializer(orders)
+        return Response(serializer.data)
+    else:
+        content={'status': 'Log In to show order.'}
+        return Response(content)
 
 
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-@api_view(['PUT'])
-def confirm_order(request, pk):
-    pass
+@api_view(['GET'])
+def confirm_order(request, id):
+    if (isinstance(request.user, User)) and request.method == 'GET':
+        status = ShoppingCart.objects.get(id=id)
+        serializer = ShoppingCartSerializer(status, data={"ordered": True})
+        serializer.is_valid()
+        serializer.save()
+        content={'status': 'Order has been updated.'}
+        return Response(content)
+    else:
+        content={'status': 'Log In to update order status.'}
+        return Response(content)
 
+
+@api_view(['GET'])
+def get_carts(request):
+    qs = ShoppingCart.objects.all()
+    serializer = ShoppingCartSerializer(qs, many=True)
+    return Response(serializer.data)

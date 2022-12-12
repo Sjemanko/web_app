@@ -38,9 +38,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     owner = serializers.ReadOnlyField(source='owner.username')
     ordered = serializers.BooleanField() 
     
+    def update(self, instance, validated_data):
+        instance.ordered = validated_data.get('ordered', instance.ordered)
+        instance.save()
+        return instance
+
     class Meta:
         model = ShoppingCart
         fields = '__all__'
@@ -64,6 +70,7 @@ class OrderedItemsSerializer(serializers.Serializer):
 
 
 class CartItemsSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     product = ProductInlineSerializer(read_only=True)
     quantity = serializers.IntegerField()
 
