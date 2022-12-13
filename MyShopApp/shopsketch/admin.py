@@ -22,6 +22,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'owner',
+        'total_price'
     ]
 
 

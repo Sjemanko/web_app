@@ -190,7 +190,27 @@ def confirm_order(request, id):
 
 
 @api_view(['GET'])
+def get_cart(request, id):
+    qs = ShoppingCart.objects.get(id=id)
+    qs.total_price = count_total_sum(request, id=id)
+    serializer = ShoppingCartSerializer(qs)
+    return Response(serializer.data)
+
+@api_view(['GET'])
 def get_carts(request):
     qs = ShoppingCart.objects.all()
+    print(qs)
+    for i in range(len(qs)):
+        qs[i].total_price = count_total_sum(request, id=qs[i].id)
     serializer = ShoppingCartSerializer(qs, many=True)
     return Response(serializer.data)
+
+
+def count_total_sum(request, id):
+    user_orders = OrderedItems.objects.filter(shopping_cart__id=id)
+    cost_of_ordered_items = []
+    for i in range(0,len(user_orders)):
+        cost_of_ordered_items.append(user_orders[i].quantity * user_orders[i].product.product_price)
+    print(cost_of_ordered_items)
+    print(sum(cost_of_ordered_items))
+    return sum(cost_of_ordered_items)

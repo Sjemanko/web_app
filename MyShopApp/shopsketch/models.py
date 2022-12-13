@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-# from django.db.models import pre_save, post_save
-# from django.dispatch import receiver
+
 # Create your models here.
 
 
@@ -52,10 +51,10 @@ class Product(models.Model):
 class ShoppingCart(models.Model):
     owner = models.ForeignKey('auth.User', null='true', on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
+    total_price = models.FloatField(default=0)
 
     def __str__(self):
         return f'{self.owner.username} {self.id}'
-
 
 
 class OrderedItems(models.Model):

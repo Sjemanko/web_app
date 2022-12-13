@@ -41,6 +41,7 @@ class ShoppingCartSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     owner = serializers.ReadOnlyField(source='owner.username')
     ordered = serializers.BooleanField() 
+    total_price = serializers.FloatField(read_only=True)
     
     def update(self, instance, validated_data):
         instance.ordered = validated_data.get('ordered', instance.ordered)
@@ -63,6 +64,7 @@ class OrderedItemsSerializer(serializers.Serializer):
     shopping_cart = ShoppingCartSerializer(read_only=True)
     product = ProductInlineSerializer(read_only=True)
     quantity = serializers.IntegerField()
+    total_price = serializers.FloatField()
     
     class Meta:
         model = OrderedItems
