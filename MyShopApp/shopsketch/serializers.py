@@ -32,6 +32,12 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+    def validate_product_price(self, product_price):
+        if product_price < 0:
+            raise serializers.ValidationError("Negative Price. Correct product_price field.")
+        else: 
+            return product_price
+    
     class Meta:
         model = Product
         fields = '__all__'
@@ -96,6 +102,12 @@ class OrderSerializer(serializers.Serializer):
         instance.quantity = validated_data.get('quantity', instance.quantity)
         instance.save()
         return instance
+    
+    def validate_quantity(self, quantity):
+        if quantity < 0: 
+            raise serializers.ValidationError("Negative quantity. Correct quantity field.")
+        else: 
+            return quantity
 
         
     

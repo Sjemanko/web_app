@@ -200,8 +200,8 @@ def get_cart(request, id):
 def get_carts(request):
     qs = ShoppingCart.objects.all()
     print(qs)
-    for i in range(len(qs)):
-        qs[i].total_price = count_total_sum(request, id=qs[i].id)
+    for i in qs:
+        i.total_price = count_total_sum(request, id=i.id)
     serializer = ShoppingCartSerializer(qs, many=True)
     return Response(serializer.data)
 
@@ -211,6 +211,6 @@ def count_total_sum(request, id):
     cost_of_ordered_items = []
     for i in range(0,len(user_orders)):
         cost_of_ordered_items.append(user_orders[i].quantity * user_orders[i].product.product_price)
-    print(cost_of_ordered_items)
-    print(sum(cost_of_ordered_items))
-    return sum(cost_of_ordered_items)
+    # print(cost_of_ordered_items)
+    # print(sum(cost_of_ordered_items))
+    return round(sum(cost_of_ordered_items), 2)
